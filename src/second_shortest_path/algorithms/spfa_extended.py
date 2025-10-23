@@ -43,9 +43,13 @@ class StateExtendedSPFA:
         self.n = len(graph)
         
         # 统计计数器
-        self._enqueue_operations = 0  # 入队次数
-        self._dequeue_operations = 0  # 出队次数
+        self._enqueue_operations = 0  # 入队次数（向后兼容）
+        self._dequeue_operations = 0  # 出队次数（向后兼容）
+        self._push_count = 0  # Push操作次数（入队）
+        self._pop_count = 0  # Pop操作次数（出队）
         self._edge_relaxations = 0  # 边松弛次数
+        self._d1_updates = 0  # d1距离标签更新次数
+        self._d2_updates = 0  # d2距离标签更新次数
         self._iterations = 0  # 主循环迭代次数
         
         logger.debug(f"初始化 StateExtendedSPFA，图规模: {self.n} 节点")
@@ -76,7 +80,11 @@ class StateExtendedSPFA:
         # 重置统计计数器
         self._enqueue_operations = 0
         self._dequeue_operations = 0
+        self._push_count = 0
+        self._pop_count = 0
         self._edge_relaxations = 0
+        self._d1_updates = 0
+        self._d2_updates = 0
         self._iterations = 0
         
         # 初始化距离数组
@@ -94,6 +102,7 @@ class StateExtendedSPFA:
         in_queue[source][0] = True
         
         self._enqueue_operations += 1
+        self._push_count += 1
         
         logger.debug(f"开始搜索从 {source} 到 {target} 的第二短路径")
         
@@ -101,6 +110,7 @@ class StateExtendedSPFA:
             self._iterations += 1
             u, dist, is_second = queue.popleft()
             self._dequeue_operations += 1
+            self._pop_count += 1
             
             # 标记节点已出队
             if is_second:
@@ -161,43 +171,59 @@ class StateExtendedSPFA:
         # 如果找到更短的路径
         if new_dist < d1[v]:
             # 原来的最短路径变成次短路径
-            d2[v] = d1[v]
+            old_d1 = d1[v]
+            d2[v] = old_d1
             d1[v] = new_dist
+            self._d1_updates += 1
             
             # 将节点加入队列（如果不在队列中）
             if not in_queue[v][0]:
                 queue.append((v, d1[v], False))
                 in_queue[v][0] = True
                 self._enqueue_operations += 1
+                self._push_count += 1
             
             if d2[v] != float('inf') and not in_queue[v][1]:
                 queue.append((v, d2[v], True))
                 in_queue[v][1] = True
                 self._enqueue_operations += 1
+                self._push_count += 1
+                if old_d1 != float('inf'):
+                    self._d2_updates += 1
         
         # 如果找到次短路径
         elif d1[v] < new_dist < d2[v]:
             d2[v] = new_dist
+            self._d2_updates += 1
             
             if not in_queue[v][1]:
                 queue.append((v, d2[v], True))
                 in_queue[v][1] = True
                 self._enqueue_operations += 1
+                self._push_count += 1
     
     def get_statistics(self) -> dict[str, int]:
         """获取算法运行的统计信息
         
         Returns:
             包含统计信息的字典：
-            - enqueue_operations: 入队次数
-            - dequeue_operations: 出队次数
+            - enqueue_operations: 入队次数（向后兼容）
+            - dequeue_operations: 出队次数（向后兼容）
+            - push_count: Push操作次数（入队）
+            - pop_count: Pop操作次数（出队）
             - edge_relaxations: 边松弛次数
+            - d1_updates: d1距离标签更新次数
+            - d2_updates: d2距离标签更新次数
             - iterations: 主循环迭代次数
         """
         return {
             'enqueue_operations': self._enqueue_operations,
             'dequeue_operations': self._dequeue_operations,
+            'push_count': self._push_count,
+            'pop_count': self._pop_count,
             'edge_relaxations': self._edge_relaxations,
+            'd1_updates': self._d1_updates,
+            'd2_updates': self._d2_updates,
             'iterations': self._iterations,
         }
 

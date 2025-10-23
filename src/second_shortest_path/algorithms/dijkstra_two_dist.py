@@ -44,7 +44,11 @@ class TwoDistanceDijkstra:
         
         # 统计计数器
         self._pq_operations = 0  # 优先队列操作次数（push + pop）
+        self._push_count = 0  # Push操作次数
+        self._pop_count = 0  # Pop操作次数
         self._edge_relaxations = 0  # 边松弛次数
+        self._d1_updates = 0  # d1距离标签更新次数
+        self._d2_updates = 0  # d2距离标签更新次数
         self._iterations = 0  # 主循环迭代次数
         
         logger.debug(f"初始化 TwoDistanceDijkstra，图规模: {self.n} 节点")
@@ -74,7 +78,11 @@ class TwoDistanceDijkstra:
         
         # 重置统计计数器
         self._pq_operations = 0
+        self._push_count = 0
+        self._pop_count = 0
         self._edge_relaxations = 0
+        self._d1_updates = 0
+        self._d2_updates = 0
         self._iterations = 0
         
         # 初始化距离数组
@@ -87,6 +95,7 @@ class TwoDistanceDijkstra:
         pq = [(0, source, False)]
         d1[source] = 0
         self._pq_operations += 1  # push
+        self._push_count += 1
         
         logger.debug(f"开始搜索从 {source} 到 {target} 的第二短路径")
         
@@ -94,6 +103,7 @@ class TwoDistanceDijkstra:
             self._iterations += 1
             dist, u, is_second = heapq.heappop(pq)
             self._pq_operations += 1  # pop
+            self._pop_count += 1
             
             # 如果已经找到目标的次短路径，可以提前终止
             if u == target and is_second:
@@ -154,21 +164,29 @@ class TwoDistanceDijkstra:
         # 如果找到更短的路径
         if new_dist < d1[v]:
             # 原来的最短路径变成次短路径
-            d2[v] = d1[v]
+            old_d1 = d1[v]
+            d2[v] = old_d1
             d1[v] = new_dist
+            self._d1_updates += 1
             
             heapq.heappush(pq, (d1[v], v, False))
             self._pq_operations += 1
+            self._push_count += 1
             
             if d2[v] != float('inf'):
                 heapq.heappush(pq, (d2[v], v, True))
                 self._pq_operations += 1
+                self._push_count += 1
+                if old_d1 != float('inf'):
+                    self._d2_updates += 1
         
         # 如果找到次短路径
         elif d1[v] < new_dist < d2[v]:
             d2[v] = new_dist
+            self._d2_updates += 1
             heapq.heappush(pq, (d2[v], v, True))
             self._pq_operations += 1
+            self._push_count += 1
     
     def get_statistics(self) -> dict[str, int]:
         """获取算法运行的统计信息
@@ -176,12 +194,20 @@ class TwoDistanceDijkstra:
         Returns:
             包含统计信息的字典：
             - pq_operations: 优先队列操作次数
+            - push_count: Push操作次数
+            - pop_count: Pop操作次数
             - edge_relaxations: 边松弛次数
+            - d1_updates: d1距离标签更新次数
+            - d2_updates: d2距离标签更新次数
             - iterations: 主循环迭代次数
         """
         return {
             'pq_operations': self._pq_operations,
+            'push_count': self._push_count,
+            'pop_count': self._pop_count,
             'edge_relaxations': self._edge_relaxations,
+            'd1_updates': self._d1_updates,
+            'd2_updates': self._d2_updates,
             'iterations': self._iterations,
         }
 

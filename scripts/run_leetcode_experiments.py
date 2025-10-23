@@ -168,13 +168,21 @@ def run_leetcode_experiments(
             'dijkstra_second': d_second,
             'dijkstra_correct': dijkstra_correct,
             'dijkstra_pq_ops': d_stats.get('pq_operations', 0),
+            'dijkstra_push_count': d_stats.get('push_count', 0),
+            'dijkstra_pop_count': d_stats.get('pop_count', 0),
             'dijkstra_edge_relax': d_stats.get('edge_relaxations', 0),
+            'dijkstra_d1_updates': d_stats.get('d1_updates', 0),
+            'dijkstra_d2_updates': d_stats.get('d2_updates', 0),
             'spfa_time': s_time,
             'spfa_shortest': s_shortest,
             'spfa_second': s_second,
             'spfa_correct': spfa_correct,
             'spfa_queue_ops': s_stats.get('enqueue_operations', 0),
+            'spfa_push_count': s_stats.get('push_count', 0),
+            'spfa_pop_count': s_stats.get('pop_count', 0),
             'spfa_edge_relax': s_stats.get('edge_relaxations', 0),
+            'spfa_d1_updates': s_stats.get('d1_updates', 0),
+            'spfa_d2_updates': s_stats.get('d2_updates', 0),
         })
         
         logger.info("")
@@ -203,6 +211,11 @@ def run_leetcode_experiments(
             'second': row['dijkstra_second'],
             'correct': row['dijkstra_correct'],
             'operations': row['dijkstra_pq_ops'],
+            'push_count': row['dijkstra_push_count'],
+            'pop_count': row['dijkstra_pop_count'],
+            'edge_relaxations': row['dijkstra_edge_relax'],
+            'd1_updates': row['dijkstra_d1_updates'],
+            'd2_updates': row['dijkstra_d2_updates'],
         })
         
         # SPFA 结果
@@ -217,6 +230,11 @@ def run_leetcode_experiments(
             'second': row['spfa_second'],
             'correct': row['spfa_correct'],
             'operations': row['spfa_queue_ops'],
+            'push_count': row['spfa_push_count'],
+            'pop_count': row['spfa_pop_count'],
+            'edge_relaxations': row['spfa_edge_relax'],
+            'd1_updates': row['spfa_d1_updates'],
+            'd2_updates': row['spfa_d2_updates'],
         })
     
     viz_df = pd.DataFrame(viz_results)
@@ -274,7 +292,11 @@ def run_leetcode_experiments(
                 'total': official_total,
                 'accuracy': sum(1 for r in results if r['has_expected'] and r['dijkstra_correct']) / official_total if official_total > 0 else 0,
                 'avg_pq_ops': float(dijkstra_avg_ops),
+                'avg_push_count': float(df['dijkstra_push_count'].mean()),
+                'avg_pop_count': float(df['dijkstra_pop_count'].mean()),
                 'avg_edge_relax': float(df['dijkstra_edge_relax'].mean()),
+                'avg_d1_updates': float(df['dijkstra_d1_updates'].mean()),
+                'avg_d2_updates': float(df['dijkstra_d2_updates'].mean()),
             },
             'spfa': {
                 'avg_time': float(spfa_avg_time),
@@ -282,7 +304,11 @@ def run_leetcode_experiments(
                 'total': official_total,
                 'accuracy': sum(1 for r in results if r['has_expected'] and r['spfa_correct']) / official_total if official_total > 0 else 0,
                 'avg_queue_ops': float(spfa_avg_ops),
+                'avg_push_count': float(df['spfa_push_count'].mean()),
+                'avg_pop_count': float(df['spfa_pop_count'].mean()),
                 'avg_edge_relax': float(df['spfa_edge_relax'].mean()),
+                'avg_d1_updates': float(df['spfa_d1_updates'].mean()),
+                'avg_d2_updates': float(df['spfa_d2_updates'].mean()),
             },
         },
         'details': results,
@@ -313,6 +339,24 @@ def run_leetcode_experiments(
         logger.info("✅ 可扩展性分析图")
     except Exception as e:
         logger.warning(f"⚠️  可扩展性分析图生成失败: {e}")
+    
+    try:
+        Visualizer.plot_complexity_verification(viz_df, viz_dir / "complexity_verification.png")
+        logger.info("✅ 复杂度验证图")
+    except Exception as e:
+        logger.warning(f"⚠️  复杂度验证图生成失败: {e}")
+    
+    try:
+        Visualizer.plot_operations_comparison(viz_df, viz_dir / "operations_comparison.png")
+        logger.info("✅ 操作次数对比图")
+    except Exception as e:
+        logger.warning(f"⚠️  操作次数对比图生成失败: {e}")
+    
+    try:
+        Visualizer.plot_distance_updates_comparison(viz_df, viz_dir / "distance_updates.png")
+        logger.info("✅ 距离更新对比图")
+    except Exception as e:
+        logger.warning(f"⚠️  距离更新对比图生成失败: {e}")
     
     try:
         Visualizer.plot_percentile_comparison(viz_df, viz_dir / "percentile_comparison.png")
