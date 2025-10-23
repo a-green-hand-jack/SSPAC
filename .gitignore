@@ -54,7 +54,8 @@ coverage.xml
 
 # Project specific
 data/generated/
-results/
+results/*
+!results/leetcode_experiments/
 
 # Jupyter Notebook
 .ipynb_checkpoints
