@@ -186,6 +186,41 @@ def run_leetcode_experiments(
     
     df = pd.DataFrame(results)
     
+    # 转换为长格式（长表格式）以兼容可视化函数
+    # 创建两个算法的结果列表
+    viz_results = []
+    
+    for _, row in df.iterrows():
+        # Dijkstra 结果
+        viz_results.append({
+            'case_id': row['case_id'],
+            'name': row['name'],
+            'n': row['n'],
+            'm': row['m'],
+            'algorithm': 'Dijkstra',
+            'time': row['dijkstra_time'],
+            'shortest': row['dijkstra_shortest'],
+            'second': row['dijkstra_second'],
+            'correct': row['dijkstra_correct'],
+            'operations': row['dijkstra_pq_ops'],
+        })
+        
+        # SPFA 结果
+        viz_results.append({
+            'case_id': row['case_id'],
+            'name': row['name'],
+            'n': row['n'],
+            'm': row['m'],
+            'algorithm': 'SPFA',
+            'time': row['spfa_time'],
+            'shortest': row['spfa_shortest'],
+            'second': row['spfa_second'],
+            'correct': row['spfa_correct'],
+            'operations': row['spfa_queue_ops'],
+        })
+    
+    viz_df = pd.DataFrame(viz_results)
+    
     # 官方用例统计
     official_correct = [r for r in results if r['has_expected'] and r['dijkstra_correct']]
     official_total = len([r for r in results if r['has_expected']])
@@ -268,19 +303,19 @@ def run_leetcode_experiments(
     logger.info("\n🎨 生成可视化图表...\n")
     
     try:
-        Visualizer.plot_runtime_comparison(df, viz_dir / "runtime_comparison.png")
+        Visualizer.plot_runtime_comparison(viz_df, viz_dir / "runtime_comparison.png")
         logger.info("✅ 运行时间对比图")
     except Exception as e:
         logger.warning(f"⚠️  运行时间对比图生成失败: {e}")
     
     try:
-        Visualizer.plot_scalability(df, viz_dir / "scalability.png")
+        Visualizer.plot_scalability(viz_df, viz_dir / "scalability.png")
         logger.info("✅ 可扩展性分析图")
     except Exception as e:
         logger.warning(f"⚠️  可扩展性分析图生成失败: {e}")
     
     try:
-        Visualizer.plot_percentile_comparison(df, viz_dir / "percentile_comparison.png")
+        Visualizer.plot_percentile_comparison(viz_df, viz_dir / "percentile_comparison.png")
         logger.info("✅ 百分位数对比图")
     except Exception as e:
         logger.warning(f"⚠️  百分位数对比图生成失败: {e}")
