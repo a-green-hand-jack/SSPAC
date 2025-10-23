@@ -185,7 +185,7 @@ def main():
         graph_sizes = args.sizes
     
     try:
-        run_experiments(graph_sizes, args.density, args.output)
+        run_experiments(graph_sizes, arg s.density, args.output)
     except Exception as e:
         logger.error(f"❌ 实验运行失败: {e}", exc_info=True)
         sys.exit(1)
