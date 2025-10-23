@@ -61,7 +61,7 @@ class Visualizer:
             data=results, 
             palette=['#3498db', '#e74c3c'],
             showmeans=True,
-            meanprops={'marker': 'D', 'markerfacecolor': 'yellow', 'markersize': 8}
+            meanprops={'marker': 'D', 'markerfacecolor': 'gold', 'markersize': 10, 'markeredgecolor': 'black', 'markeredgewidth': 1.5}
         )
         
         ax.set_xlabel('Algorithm', fontsize=14, fontweight='bold')
@@ -69,30 +69,20 @@ class Visualizer:
         ax.set_title('Algorithm Runtime Comparison (Box Plot)', fontsize=16, fontweight='bold')
         ax.tick_params(axis='x', rotation=0)
         
-        # 添加统计信息标注
-        algorithms = results['algorithm'].unique()
-        for i, algo in enumerate(algorithms):
-            algo_df = results[results['algorithm'] == algo]
-            
-            mean_time = algo_df['time'].mean()
-            median_time = algo_df['time'].median()
-            p95_time = algo_df['time'].quantile(0.95)
-            p99_time = algo_df['time'].quantile(0.99)
-            
-            # 在图上方添加统计信息
-            y_pos = algo_df['time'].max() * 1.05
-            stats_text = (
-                f"Mean: {mean_time:.6f}s\n"
-                f"P50: {median_time:.6f}s\n"
-                f"P95: {p95_time:.6f}s\n"
-                f"P99: {p99_time:.6f}s"
-            )
-            
-            ax.text(
-                i, y_pos, stats_text,
-                ha='center', va='bottom', fontsize=9,
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-            )
+        # 添加图例说明
+        from matplotlib.patches import Patch
+        from matplotlib.lines import Line2D
+        
+        legend_elements = [
+            Line2D([0], [0], marker='_', color='w', label='Median (P50)',
+                   markerfacecolor='black', markersize=12, markeredgecolor='black', linewidth=2),
+            Line2D([0], [0], marker='D', color='w', label='Mean',
+                   markerfacecolor='gold', markersize=8, markeredgecolor='black', markeredgewidth=1.5),
+            Patch(facecolor='#3498db', label='Dijkstra', alpha=0.7),
+            Patch(facecolor='#e74c3c', label='SPFA', alpha=0.7),
+        ]
+        
+        ax.legend(handles=legend_elements, loc='upper left', fontsize=11, framealpha=0.95, edgecolor='black')
         
         plt.tight_layout()
         plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
