@@ -7131,8 +7131,8 @@
       ],
       "source": 1,
       "target": 10,
-      "expected_shortest": 2,
-      "expected_second_shortest": 4,
+      "expected_shortest": 1,
+      "expected_second_shortest": 3,
       "description": "星形图"
     },
     {
@@ -7207,8 +7207,8 @@
       ],
       "source": 1,
       "target": 8,
-      "expected_shortest": 2,
-      "expected_second_shortest": 4,
+      "expected_shortest": 1,
+      "expected_second_shortest": 3,
       "description": "完全二分图"
     },
     {
