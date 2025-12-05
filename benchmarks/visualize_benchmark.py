@@ -80,8 +80,9 @@ def plot_shortest_path():
 
     plt.tight_layout()
     plt.savefig('shortest_path_benchmark.png', dpi=150, bbox_inches='tight')
+    plt.savefig('shortest_path_benchmark.pdf', bbox_inches='tight')
     plt.close()
-    print("Saved: shortest_path_benchmark.png")
+    print("Saved: shortest_path_benchmark.png, shortest_path_benchmark.pdf")
 
 
 def plot_second_shortest_path():
@@ -143,8 +144,9 @@ def plot_second_shortest_path():
 
     plt.tight_layout()
     plt.savefig('second_shortest_path_benchmark.png', dpi=150, bbox_inches='tight')
+    plt.savefig('second_shortest_path_benchmark.pdf', bbox_inches='tight')
     plt.close()
-    print("Saved: second_shortest_path_benchmark.png")
+    print("Saved: second_shortest_path_benchmark.png, second_shortest_path_benchmark.pdf")
 
 
 def plot_combined():
@@ -205,8 +207,9 @@ def plot_combined():
                  fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.savefig('combined_benchmark.png', dpi=150, bbox_inches='tight')
+    plt.savefig('combined_benchmark.pdf', bbox_inches='tight')
     plt.close()
-    print("Saved: combined_benchmark.png")
+    print("Saved: combined_benchmark.png, combined_benchmark.pdf")
 
 
 def plot_speedup_line():
@@ -261,8 +264,9 @@ def plot_speedup_line():
 
     plt.tight_layout()
     plt.savefig('speedup_ratio.png', dpi=150, bbox_inches='tight')
+    plt.savefig('speedup_ratio.pdf', bbox_inches='tight')
     plt.close()
-    print("Saved: speedup_ratio.png")
+    print("Saved: speedup_ratio.png, speedup_ratio.pdf")
 
 
 if __name__ == '__main__':
