@@ -218,13 +218,13 @@ def run_leetcode_experiments(
             'd2_updates': row['dijkstra_d2_updates'],
         })
         
-        # SPFA 结果
+        # Queue-Optimized Bellman-Ford 结果
         viz_results.append({
             'case_id': row['case_id'],
             'name': row['name'],
             'n': row['n'],
             'm': row['m'],
-            'algorithm': 'SPFA',
+            'algorithm': 'Queue-Optimized Bellman-Ford',
             'time': row['spfa_time'],
             'shortest': row['spfa_shortest'],
             'second': row['spfa_second'],
