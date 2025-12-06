@@ -79,7 +79,7 @@ class Visualizer:
             Line2D([0], [0], marker='D', color='w', label='Mean',
                    markerfacecolor='gold', markersize=8, markeredgecolor='black', markeredgewidth=1.5),
             Patch(facecolor='#3498db', label='Dijkstra', alpha=0.7),
-            Patch(facecolor='#e74c3c', label='SPFA', alpha=0.7),
+            Patch(facecolor='#e74c3c', label='Queue-Optimized Bellman-Ford', alpha=0.7),
         ]
         
         ax.legend(handles=legend_elements, loc='upper left', fontsize=11, framealpha=0.95, edgecolor='black')
@@ -158,10 +158,10 @@ class Visualizer:
         output_path: str | Path
     ) -> None:
         """复杂度验证散点图+拟合曲线
-        
+
         使用scipy进行完整的曲线拟合：
         - Dijkstra: 拟合 T = c * M * log(N)
-        - SPFA: 同时拟合 O(M log N) 和 O(MN)，选择R²更高的
+        - Queue-Optimized Bellman-Ford: 同时拟合 O(M log N) 和 O(MN)，选择R²更高的
         
         Args:
             results: 测试结果DataFrame
